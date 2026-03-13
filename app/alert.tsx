@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export default function EmergencyTriggeredScreen() {
   const router = useRouter();
+  const {lat, lng} = useLocalSearchParams();
 
   return (
     <View className="flex-1 justify-center items-center bg-white px-6">
@@ -46,7 +47,10 @@ export default function EmergencyTriggeredScreen() {
 
       <TouchableOpacity
         className="mt-4 w-full bg-red-500 py-4 rounded-2xl items-center"
-        onPress={() => router.push("/liveLocation")}
+        onPress={() => router.push({
+          pathname: "/liveLocation",
+          params: { lat, lng }
+        })}
       >
         <Text className="text-white font-bold text-lg">View Map</Text>
       </TouchableOpacity>

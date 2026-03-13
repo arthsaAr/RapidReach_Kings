@@ -1,9 +1,11 @@
 import * as Location from 'expo-location';
 import { useRouter } from "expo-router";
+import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
+  const db = getFirestore();
   const router = useRouter();
   const [locationEnabled, setLocationEnabled] = useState(false);
  
@@ -33,7 +35,23 @@ export default function HomeScreen() {
               const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
               if (newStatus === 'granted') {
                 setLocationEnabled(true);
-                router.push("/alert");
+                const location = await Location.getCurrentPositionAsync({
+                  accuracy: Location.Accuracy.Lowest,
+                  timeInterval: 5000,
+                });
+                await setDoc(doc(db, 'emergencies', 'current'), {
+                  lat: location.coords.latitude,
+                  lng: location.coords.longitude,
+                  type: 'Medical Emergency',
+                  timestamp: Date.now(),
+                });
+                router.push({
+                pathname: "/alert",
+                params: {
+                  lat: location.coords.latitude,
+                  lng: location.coords.longitude,
+                }
+              });
               }
             }
           },
@@ -43,7 +61,20 @@ export default function HomeScreen() {
     }
  
     // Location is enabled, proceed to alert
-    router.push("/alert");
+    const location = await Location.getCurrentPositionAsync({});
+    await setDoc(doc(db, 'emergencies', 'current'), { 
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+      type: 'Medical Emergency',
+      timestamp: Date.now(),
+    });
+    router.push({
+      pathname: "/alert",
+      params: {
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      }
+    });
   };
  
   return (

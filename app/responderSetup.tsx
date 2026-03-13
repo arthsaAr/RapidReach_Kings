@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
 import { useRouter } from "expo-router";
+import { doc, setDoc } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { db } from '../firebaseConfig';
 
 const trainingOptions = ["First Aider", "Paramedic", "Nurse", "Doctor", "Lifeguard", "Other"];
 
@@ -14,6 +16,8 @@ export default function ResponderSetupScreen() {
   const [hasFirstAidKit, setHasFirstAidKit] = useState(false);
   const [hasAED, setHasAED] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
+
+  // const db = getFirestore();
 
   //checking location permission status(current)
   useEffect(() => {
@@ -160,9 +164,30 @@ export default function ResponderSetupScreen() {
         className={`mt-8 mb-8 w-full py-4 rounded-2xl items-center ${
           isFormValid ? "bg-red-500" : "bg-gray-300"
         }`}
-        onPress={() => {
+        onPress={async () => {
           if (isFormValid) {
-            router.push("/home");
+            //had to use watchpositionasync for live location
+            await Location.watchPositionAsync(
+            { 
+              accuracy: Location.Accuracy.Balanced, 
+              timeInterval: 5000,      // updates every 5 seconds
+              distanceInterval: 5,     //or every 5 meters moved
+            },
+            (location) => {
+              setDoc(doc(db, 'responders', 'responder1'), {
+                lat: location.coords.latitude,
+                lng: location.coords.longitude,
+              });
+            }
+          );
+            // const location = await Location.getCurrentPositionAsync({
+            //   accuracy: Location.Accuracy.Lowest,
+            // });
+            // await setDoc(doc(db, 'responders', 'responder1'), {
+            //   lat: location.coords.latitude,
+            //   lng: location.coords.longitude
+            // });
+            router.push("/responderAlert");
           }
         }}
         disabled={!isFormValid}

@@ -15,7 +15,6 @@ export default function LiveLocationScreen() {
   //   longitude: -122.4324,
   // };
   
-  
   const userLocation = {
     latitude: parseFloat(lat as string) || 37.78825,
     longitude: parseFloat(lng as string) || -122.4324,
@@ -43,7 +42,7 @@ export default function LiveLocationScreen() {
   };
 
   useEffect(() => {
-    const locc = onSnapshot(doc(db, 'responders', 'responders1'), (snap) => {
+    const locc = onSnapshot(doc(db, 'responders', 'responder1'), (snap) => {
       const data = snap.data();
       if(data){
         setResponderLocation({
@@ -55,14 +54,14 @@ export default function LiveLocationScreen() {
     return () => locc();
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007BFF" />
-        <Text>Loading Map...</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <ActivityIndicator size="large" color="#007BFF" />
+  //       <Text>Loading Map...</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View className="flex-1 bg-white">

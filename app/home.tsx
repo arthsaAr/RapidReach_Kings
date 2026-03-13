@@ -20,7 +20,15 @@ export default function HomeScreen() {
   };
  
   const handleEmergency = async () => {
-    // Check if location is enabled
+    // Check if device location is on
+    const servicesEnabled = await Location.hasServicesEnabledAsync();
+    if (!servicesEnabled) {
+      Alert.alert(
+        "Location Services Off",
+        "Please turn on location services in your device settings.",
+      );
+      return;
+    }
     const { status } = await Location.getForegroundPermissionsAsync();
     
     if (status !== 'granted') {
@@ -35,10 +43,19 @@ export default function HomeScreen() {
               const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
               if (newStatus === 'granted') {
                 setLocationEnabled(true);
-                const location = await Location.getCurrentPositionAsync({
-                  accuracy: Location.Accuracy.High,
-                  timeInterval: 5000,
-                });
+                // const location = await Location.getCurrentPositionAsync({
+                //   accuracy: Location.Accuracy.Lowest,
+                //   timeInterval: 5000,
+                // });
+                let location;
+                try {
+                  location = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.Balanced
+                  });
+                } catch (e) {
+                  Alert.alert("Location Error", "Could not get your location. Please try again.");
+                  return;
+                }
                 await setDoc(doc(db, 'emergencies', 'current'), {
                   lat: location.coords.latitude,
                   lng: location.coords.longitude,
@@ -61,7 +78,16 @@ export default function HomeScreen() {
     }
  
     // Location is enabled, proceed to alert
-    const location = await Location.getCurrentPositionAsync({});
+    // const location = await Location.getCurrentPositionAsync({});
+    let location;
+    try {
+      location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced
+      });
+    } catch (e) {
+      Alert.alert("Location Error", "Could not get your location. Please try again.");
+      return;
+    }
     await setDoc(doc(db, 'emergencies', 'current'), { 
       lat: location.coords.latitude,
       lng: location.coords.longitude,

@@ -8,7 +8,7 @@ import { db } from '../firebaseConfig';
  
 export default function ResponderAlertScreen() {
   const router = useRouter();
-
+  
   const [emergency, setEmergency] = useState(null);
   const [distance, setDistance] = useState(null);
 
@@ -18,6 +18,8 @@ export default function ResponderAlertScreen() {
       const data = snap.data();
 
       if (data) {
+        const age = Date.now() - data.timestamp;
+        if (age > 30000) return;
         setEmergency(data);
 
         // calculate distance from responder to emergency
@@ -82,13 +84,21 @@ export default function ResponderAlertScreen() {
         </View>
   
         <TouchableOpacity className="w-full bg-red-500 py-4 rounded-2xl items-center mb-4"
-          onPress={() => router.push({
+          onPress={async () => {
+          const { getDoc, updateDoc } = await import('firebase/firestore');
+          const responderSnap = await getDoc(doc(db, 'responders', 'responder1'));
+          const responderName = responderSnap.data()?.name || 'A responder';
+          
+          await updateDoc(doc(db, 'emergencies', 'current'), {
+            respondedBy: responderName,
+            responding: true,
+          });
+
+          router.push({
             pathname: "/liveLocation",
-            params: {
-              lat: emergency?.lat,
-              lng: emergency?.lng,
-            }
-          })}>
+            params: { lat: emergency?.lat, lng: emergency?.lng }
+          });
+        }}>
           <Text className="text-white font-bold text-lg">I'm Responding</Text>
         </TouchableOpacity>
   

@@ -177,6 +177,7 @@ export default function ResponderSetupScreen() {
               setDoc(doc(db, 'responders', 'responder1'), {
                 lat: location.coords.latitude,
                 lng: location.coords.longitude,
+                name: name
               });
             }
           );

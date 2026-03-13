@@ -55,6 +55,15 @@ export default function LiveLocationScreen() {
     return () => locc();
   }, []);
 
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#007BFF" />
+        <Text>Loading Map...</Text>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-white">
       <View className="bg-white border-b border-gray-200 px-6 mt-8 mb-3">

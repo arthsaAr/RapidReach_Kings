@@ -24,7 +24,7 @@ export default function InitialHomeScreen() {
         className="mt-10 w-full bg-red-500 py-4 rounded-2xl items-center"
         onPress={() => router.push("/responderSetup")}
       >
-        <Text className="text-white font-bold text-lg">I Want to Help(Responder)</Text>
+        <Text className="text-white font-bold text-lg">I Want to Help (Responder)</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

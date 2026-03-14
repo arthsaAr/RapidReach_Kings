@@ -71,7 +71,7 @@ export default function ResponderSetupScreen() {
       
       <Text className="text-gray-500 text-xl mt-2">Help us understand your training and capabilities.</Text>
 
-      <Text className="text-gray-800 text-lg font-semibold mt-6">Name*</Text>
+      <Text className="text-gray-800 text-lg font-semibold mt-6">Name<Text className="text-red-800">*</Text></Text>
       <TextInput
         className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 text-gray-800"
         placeholder="Enter your name"
@@ -80,7 +80,7 @@ export default function ResponderSetupScreen() {
         onChangeText={setName}
       />
 
-      <Text className="text-gray-800 font-semibold text-lg mt-6">Training Level*</Text>
+      <Text className="text-gray-800 font-semibold text-lg mt-6">Training Level<Text className="text-red-800">*</Text></Text>
       
       <TouchableOpacity
         className="mt-2 w-full border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between items-center"

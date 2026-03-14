@@ -41,7 +41,7 @@ export default function EmergencyTriggeredScreen() {
         </View>
       </View>
 
-      <Text className="text-black text-5xl font-bold text-center">Emergency Sent</Text>
+      <Text className="text-black text-4xl font-bold text-center">Emergency Sent</Text>
       <Text className="text-gray-500 text-lg mt-4 text-center">Notifying nearby responders</Text>
 
       <View className="mt-8 bg-white w-full rounded-2xl py-3 px-5 flex-row items-center border border-gray-600 justify-between">

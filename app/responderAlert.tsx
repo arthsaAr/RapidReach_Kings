@@ -1,16 +1,21 @@
 import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from "react-native";
 import { db } from '../firebaseConfig';
+
  
 export default function ResponderAlertScreen() {
   const router = useRouter();
   
   const [emergency, setEmergency] = useState(null);
   const [distance, setDistance] = useState(null);
+  const { responderId } = useLocalSearchParams();
+  const [alreadyResponding, setAlreadyResponding] = useState(false);
+  const [alreadyRespondingName, setAlreadyRespondingName] = useState('');
+  const [cancelled, setCancelled] = useState(false);
 
   //checking live for any emergency
   useEffect(() => {
@@ -21,6 +26,15 @@ export default function ResponderAlertScreen() {
         const age = Date.now() - data.timestamp;
         if (age > 30000) return;
         setEmergency(data);
+
+        if (data.responding) {
+          setAlreadyResponding(true);
+          setAlreadyRespondingName(data.respondedBy || 'Someone');
+        }
+
+        if (data.cancelled) {
+          setCancelled(true);
+        }
 
         // calculate distance from responder to emergency
         const responderLocation = await Location.getCurrentPositionAsync({
@@ -82,11 +96,34 @@ export default function ResponderAlertScreen() {
             {distance ? `${distance} meters` : 'Calculating...'}
           </Text>
         </View>
+
+        {alreadyResponding && (
+          <View className="w-full bg-blue-50 border border-blue-300 rounded-2xl p-4 mb-4">
+            <Text className="text-blue-700 font-bold text-base text-center">
+              {alreadyRespondingName} is already on the way
+            </Text>
+            <Text className="text-blue-500 text-sm text-center mt-1">
+              Do you still want to help?
+            </Text>
+          </View>
+        )}
   
-        <TouchableOpacity className="w-full bg-red-500 py-4 rounded-2xl items-center mb-4"
+        {cancelled && (
+          <View className="w-full bg-gray-100 border border-gray-300 rounded-2xl p-4 mb-4">
+            <Text className="text-gray-700 font-bold text-base text-center">✅ False Alarm</Text>
+            <Text className="text-gray-500 text-sm text-center mt-1">
+              The emergency was cancelled by the caller
+            </Text>
+          </View>
+        )}
+
+
+        <TouchableOpacity 
+          className={`w-full py-4 rounded-2xl items-center mb-4 ${cancelled ? 'bg-gray-300' : 'bg-red-500'}`}
+          disabled={cancelled}
           onPress={async () => {
           const { getDoc, updateDoc } = await import('firebase/firestore');
-          const responderSnap = await getDoc(doc(db, 'responders', 'responder1'));
+          const responderSnap = await getDoc(doc(db, 'responders', responderId as string));
           const responderName = responderSnap.data()?.name || 'A responder';
           
           await updateDoc(doc(db, 'emergencies', 'current'), {
@@ -99,11 +136,18 @@ export default function ResponderAlertScreen() {
             params: { lat: emergency?.lat, lng: emergency?.lng }
           });
         }}>
-          <Text className="text-white font-bold text-lg">I'm Responding</Text>
+          <Text className="text-white font-bold text-lg">{alreadyResponding ? "Join Anyway" : "I'm Responding"}</Text>
         </TouchableOpacity>
   
         <TouchableOpacity className="w-full bg-gray-100 py-4 rounded-2xl items-center"
-          onPress={() => router.back()}>
+          // onPress={() => router.back()}>
+          onPress={async () => {
+          const { updateDoc } = await import('firebase/firestore');
+          await updateDoc(doc(db, 'emergencies', 'current'), {
+            declined: true,
+          });
+          router.back();
+        }}>
           <Text className="text-gray-700 font-bold text-lg">Unavailable</Text>
         </TouchableOpacity>
         </>

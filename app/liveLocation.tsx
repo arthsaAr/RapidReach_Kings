@@ -10,6 +10,7 @@ export default function LiveLocationScreen() {
   const router = useRouter();
 
   const { lat, lng } = useLocalSearchParams();
+  const [responderName, setResponderName] = useState("Responder");
   // const userLocation = {
   //   latitude: 37.78825,
   //   longitude: -122.4324,
@@ -49,6 +50,7 @@ export default function LiveLocationScreen() {
           latitude: data.lat,
           longitude: data.lng,
         });
+        setResponderName(data.name || "Responder");
       }
     });
     return () => locc();
@@ -145,10 +147,10 @@ export default function LiveLocationScreen() {
 
               <View className="flex-1">
                 <Text className="text-gray-900 text-lg font-bold">
-                  Responder on the way
+                  {responderName} on the way
                 </Text>
                 <Text className="text-gray-600 text-sm mt-1">
-                  CPR Certified • First Aid Kit
+                  First Aid Kit
                 </Text>
               </View>
 

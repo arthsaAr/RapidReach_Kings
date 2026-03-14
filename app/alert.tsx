@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { doc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getCountFromServer, onSnapshot } from 'firebase/firestore';
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { db } from '../firebaseConfig';
@@ -10,16 +10,25 @@ export default function EmergencyTriggeredScreen() {
   const {lat, lng} = useLocalSearchParams();
 
   const [respondedBy, setRespondedBy] = useState(null);
+  const [declined, setDeclined] = useState(false);
+  const [responderCount, setResponderCount] = useState(0);
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'emergencies', 'current'), (snap) => {
       const data = snap.data();
-      if (data?.responding) {
-        setRespondedBy(data.respondedBy);
-      }
+      if (data?.responding) setRespondedBy(data.respondedBy);
+      if (data?.declined) setDeclined(true);
     });
     return () => unsub();
   }, []);
+
+  useEffect(() => {
+  const fetchCount = async () => {
+    const snap = await getCountFromServer(collection(db, 'responders'));
+    setResponderCount(snap.data().count);
+  };
+  fetchCount();
+}, []);
 
 
   return (
@@ -43,7 +52,7 @@ export default function EmergencyTriggeredScreen() {
 
           <View>
             <Text className="text-gray-900 text-xl font-bold">Responders Notified</Text>
-            <Text className="text-gray-600 text-lg">4 responders in area</Text>
+            <Text className="text-gray-600 text-lg">{responderCount} responders in area</Text>
           </View>
         </View>
       </View>
@@ -78,6 +87,24 @@ export default function EmergencyTriggeredScreen() {
         </View>
       </View> */}
 
+    <TouchableOpacity
+        className="mt-4 w-full bg-white py-4 rounded-2xl border border-gray-700 items-center"
+        // onPress={async () => {
+        //   await deleteDoc(doc(db, 'emergencies', 'current'));
+        //   router.replace('/home');
+        // }}
+        onPress={async () => {
+        const { updateDoc } = await import('firebase/firestore');
+        await updateDoc(doc(db, 'emergencies', 'current'), {
+          cancelled: true,
+          cancelledAt: Date.now(),
+        });
+        router.replace('/');
+      }}
+      >
+      <Text className="text-black font-semibold text-lg">Pressed by mistake?</Text>
+    </TouchableOpacity>
+
       <TouchableOpacity
         className="mt-4 w-full bg-red-500 py-4 rounded-2xl items-center"
         onPress={() => router.push({
@@ -87,6 +114,13 @@ export default function EmergencyTriggeredScreen() {
       >
         <Text className="text-white font-bold text-lg">View Map</Text>
       </TouchableOpacity>
+
+      {declined && !respondedBy && (
+        <View className="mt-3 w-full bg-red-50 border border-red-400 rounded-2xl py-3 px-5">
+          <Text className="text-red-600 font-bold text-lg text-center">⚠️ No responders available</Text>
+          <Text className="text-red-500 text-center mt-1">Please call 911 immediately</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         className="mt-4 w-full bg-white py-4 rounded-2xl  border border-gray-600 items-center"

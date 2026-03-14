@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Alert, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { db } from '../firebaseConfig';
 
+
 const trainingOptions = ["First Aider", "Paramedic", "Nurse", "Doctor", "Lifeguard", "Other"];
 
 export default function ResponderSetupScreen() {
@@ -16,6 +17,7 @@ export default function ResponderSetupScreen() {
   const [hasFirstAidKit, setHasFirstAidKit] = useState(false);
   const [hasAED, setHasAED] = useState(false);
   const [locationEnabled, setLocationEnabled] = useState(false);
+  const [responderId] = useState(`responder_${Date.now()}`);
 
   // const db = getFirestore();
 
@@ -174,7 +176,7 @@ export default function ResponderSetupScreen() {
               distanceInterval: 5,     //or every 5 meters moved
             },
             (location) => {
-              setDoc(doc(db, 'responders', 'responder1'), {
+              setDoc(doc(db, 'responders', responderId), {
                 lat: location.coords.latitude,
                 lng: location.coords.longitude,
                 name: name
@@ -188,7 +190,10 @@ export default function ResponderSetupScreen() {
             //   lat: location.coords.latitude,
             //   lng: location.coords.longitude
             // });
-            router.push("/responderAlert");
+            router.push({
+              pathname: "/responderAlert",
+              params: { responderId }
+            });
           }
         }}
         disabled={!isFormValid}

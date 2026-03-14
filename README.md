@@ -14,6 +14,20 @@ The people physically closest to an emergency — neighbours, off-duty nurses, t
 **Rapid Reach fixes that.**
 
 ---
+## 📱 App Screens
+
+<p align="center">
+  <img src="assets/Screenshots/HomeScreen.png" width="200" />
+  <img src="assets/Screenshots/EmergencyScreen.png" width="200" />
+  <img src="assets/Screenshots/EmergencyRecord.png" width="200" />
+</p>
+<p align="center">
+  <img src="assets/Screenshots/EmergencySent.png" width="200" />
+  <img src="assets/Screenshots/EmergencyAlert.png" width="200" />
+  <img src="assets/Screenshots/AiChat.png" width="200" />
+</p>
+
+---
 
 ## What It Does
 

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { collection, doc, getCountFromServer, onSnapshot } from 'firebase/firestore';
+import { collection, doc, onSnapshot } from 'firebase/firestore';
 import { useEffect, useRef, useState } from "react";
 import { Animated, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { db } from '../firebaseConfig';
@@ -84,12 +84,26 @@ export default function EmergencyTriggeredScreen() {
   }, []);
 
   useEffect(() => {
-    const fetchCount = async () => {
-      const snap = await getCountFromServer(collection(db, 'responders'));
-      setResponderCount(snap.data().count);
+      const fetchCount = async () => {
+      const { query, where, getDocs } = await import('firebase/firestore');
+      const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+      const q = query(
+        collection(db, 'responders'),
+        where('lastSeen', '>=', tenMinutesAgo)
+      );
+      const snap = await getDocs(q);
+      setResponderCount(snap.size);
     };
     fetchCount();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchCount = async () => {
+  //     const snap = await getCountFromServer(collection(db, 'responders'));
+  //     setResponderCount(snap.data().count);
+  //   };
+  //   fetchCount();
+  // }, []);
 
   return (
     <ScrollView

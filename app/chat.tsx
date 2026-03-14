@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 
-const GEMINI_API = "AIzaSyChhfAtxbCBG9gKT6fpJi3EjknZrbYXgkA";  ///add gemini free api key
+const GEMINI_API = "YOUR_API_PLEASE_AMKE_ONE_FOR_FREE_IN_GEMINI_API_SITE";  ///add gemini free api key
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`;
 // const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${GEMINI_API}`;

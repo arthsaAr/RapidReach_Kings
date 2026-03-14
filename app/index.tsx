@@ -15,9 +15,13 @@ export default function InitialHomeScreen() {
 
       <Text className="text-5xl font-bold text-black mt-3 text-center">Welcome to RapidReach</Text>
 
-      <View className="flex-col justify-center items-center mt-3 text-center px-4">
-        <Text className="text-gray-500 text-xl mt-2 text-center">Connect with trained responders during emergencies</Text>
-        <Text className="text-gray-500 text-lg mt-2 text-center">Help arrives before the ambulance!</Text>
+      <View className="flex-col justify-center items-center mt-3 px-4">
+        <Text className="text-gray-500 text-xl mt-2 text-center">
+          Help arrives before the ambulance.
+        </Text>
+        <Text className="text-gray-400 text-sm mt-1 text-center">
+          Connect with trained responders nearby.
+        </Text>
       </View>
 
       <TouchableOpacity

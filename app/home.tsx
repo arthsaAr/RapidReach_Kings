@@ -17,7 +17,7 @@ import {
 import { db } from "../firebaseConfig";
 
 // ── Paste your Gemini API key here (same one used in chat.tsx) ──
-const GEMINI_API = "AIzaSyChhfAtxbCBG9gKT6fpJi3EjknZrbYXgkA";
+const GEMINI_API = "YOUR_API_PLEASE";
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash-lite:generateContent?key=${GEMINI_API}`;
 
 // ── How long (ms) the recording auto-stops ──

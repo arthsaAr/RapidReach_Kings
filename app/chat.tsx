@@ -138,8 +138,9 @@ export default function AIChatScreen() {
   return (
     <KeyboardAvoidingView 
       className="flex-1 bg-white"
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
+	  style={{ flex: 1}}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === "ios" ? 90 : -60}
     >
       {/* Header */}
       <View className="bg-red-500 border-b border-gray-200 px-6 pt-4 pb-3">
@@ -216,7 +217,7 @@ export default function AIChatScreen() {
       </View>
 
       {/* Input Area */}
-      <View className="px-5 pb-8 pt-3 bg-white border-t border-gray-200">
+      <View className="px-5 pt-3 bg-white border-t border-gray-200" paddingBottom={48}>
         <View className="flex-row items-center gap-2">
           <TextInput
             className="flex-1 bg-gray-100 rounded-full px-5 py-3 text-gray-800"

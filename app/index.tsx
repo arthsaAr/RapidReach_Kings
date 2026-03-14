@@ -13,7 +13,7 @@ export default function InitialHomeScreen() {
           <Ionicons name="heart" size={50} color="white" />
       </View>
 
-      <Text className="text-5xl font-bold text-black mt-3 text-center">Welcome to FirstFive</Text>
+      <Text className="text-5xl font-bold text-black mt-3 text-center">Welcome to RapidReach</Text>
 
       <View className="flex-col justify-center items-center mt-3 text-center px-4">
         <Text className="text-gray-500 text-xl mt-2 text-center">Connect with trained responders during emergencies</Text>

@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { collection, doc, getCountFromServer, onSnapshot } from 'firebase/firestore';
-import { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { db } from '../firebaseConfig';
 
 export default function EmergencyTriggeredScreen() {
@@ -22,6 +22,57 @@ export default function EmergencyTriggeredScreen() {
   }
 
   const hasAIGuidance = parsedActions.length > 0;
+
+  // ── Animation refs ──
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  // Start pulsing when responder is confirmed
+  useEffect(() => {
+    if (!respondedBy) return;
+
+    // Pulse scale — card gently grows and shrinks
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.025,
+          duration: 700,
+          useNativeDriver: false,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+
+    // Glow opacity — border/bg flashes
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: false,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0.3,
+          duration: 700,
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+  }, [respondedBy]);
+
+  const glowBorderColor = glowAnim.interpolate({
+    inputRange: [0.3, 1],
+    outputRange: ['#86efac', '#16a34a'], // light green → strong green
+  });
+
+  const glowBgColor = glowAnim.interpolate({
+    inputRange: [0.3, 1],
+    outputRange: ['#f0fdf4', '#dcfce7'], // very light → soft green
+  });
 
   useEffect(() => {
     const unsub = onSnapshot(doc(db, 'emergencies', 'current'), (snap) => {
@@ -59,8 +110,6 @@ export default function EmergencyTriggeredScreen() {
       {/* ── AI Guidance Card ── */}
       {hasAIGuidance && (
         <View className="mt-6 w-full bg-red-50 border-2 border-red-400 rounded-2xl p-5">
-
-          {/* Emergency type badge */}
           <View className="flex-row items-center mb-3">
             <View className="bg-red-500 rounded-full px-3 py-1 flex-row items-center">
               <Ionicons name="warning" size={14} color="white" />
@@ -70,12 +119,10 @@ export default function EmergencyTriggeredScreen() {
             </View>
           </View>
 
-          {/* Summary */}
           {summary ? (
             <Text className="text-gray-700 text-base mb-4">{summary}</Text>
           ) : null}
 
-          {/* Step-by-step actions */}
           <Text className="text-red-600 font-bold text-lg mb-3">⚡ Do This Now</Text>
           {parsedActions.map((action, index) => (
             <View key={index} className="flex-row items-start mb-3">
@@ -101,22 +148,73 @@ export default function EmergencyTriggeredScreen() {
         </View>
       </View>
 
-      {/* ── Responder status ── */}
-      <View className={`mt-3 bg-white w-full rounded-2xl py-3 px-5 flex-row border items-center justify-between ${respondedBy ? 'border-green-500 bg-green-50' : 'border-gray-300'}`}>
-        <View className="flex-row items-center">
-          <View className={`w-10 h-10 rounded-full items-center justify-center mr-3 ${respondedBy ? 'bg-green-100' : 'bg-yellow-100'}`}>
-            <Ionicons name={respondedBy ? "person" : "time"} size={25} color={respondedBy ? "#22c55e" : "#f59e0b"} />
+      {/* ── Responder status — animated when confirmed ── */}
+      {respondedBy ? (
+        // ── ANIMATED card when responder confirmed ──
+        <Animated.View
+          style={{
+            transform: [{ scale: pulseAnim }],
+            borderColor: glowBorderColor,
+            backgroundColor: glowBgColor,
+            borderWidth: 2,
+            borderRadius: 16,
+            paddingVertical: 12,
+            paddingHorizontal: 20,
+            marginTop: 12,
+            flexDirection: 'row',
+            alignItems: 'center',
+          }}
+        >
+          {/* Icon with ripple behind it */}
+          <View style={{ position: 'relative', marginRight: 12, width: 44, height: 44 }}>
+            <Animated.View
+              style={{
+                position: 'absolute',
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: '#22c55e',
+                opacity: glowAnim,
+              }}
+            />
+            <View
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: '#16a34a',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'absolute',
+                top: 2,
+                left: 2,
+              }}
+            >
+              <Ionicons name="person" size={22} color="white" />
+            </View>
+          </View>
+
+          <View className="flex-1">
+            <Text style={{ color: '#14532d', fontSize: 18, fontWeight: 'bold' }}>
+              🚨 Responder Coming!
+            </Text>
+            <Text style={{ color: '#15803d', fontSize: 15, fontWeight: '600', marginTop: 2 }}>
+              {respondedBy} is on the way
+            </Text>
+          </View>
+        </Animated.View>
+      ) : (
+        // ── Static card while waiting ──
+        <View className="mt-3 bg-white w-full rounded-2xl py-3 px-5 flex-row border border-gray-300 items-center">
+          <View className="w-10 h-10 rounded-full bg-yellow-100 items-center justify-center mr-3">
+            <Ionicons name="time" size={25} color="#f59e0b" />
           </View>
           <View>
-            <Text className="text-gray-900 text-xl font-bold">
-              {respondedBy ? "Responder Coming!" : "Waiting for Response"}
-            </Text>
-            <Text className="text-gray-600 text-base">
-              {respondedBy ? `${respondedBy} is on the way` : "This may take some time"}
-            </Text>
+            <Text className="text-gray-900 text-xl font-bold">Waiting for Response</Text>
+            <Text className="text-gray-600 text-base">This may take some time</Text>
           </View>
         </View>
-      </View>
+      )}
 
       {/* ── No responders warning ── */}
       {declined && !respondedBy && (

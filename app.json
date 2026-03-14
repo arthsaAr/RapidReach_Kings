@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "FirstFive_Kings",
-    "slug": "FirstFive_Kings",
+    "name": "Rapid Reach",
+    "slug": "Rapid Reach",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "firstfivekings",
+    "scheme": "Rapid Reachkings",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
@@ -40,7 +40,7 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "FirstFive needs your location to alert you of nearby emergencies.",
+          "locationAlwaysAndWhenInUsePermission": "Rapid Reach needs your location to alert you of nearby emergencies.",
           "isAndroidBackgroundLocationEnabled": true
         }
       ],

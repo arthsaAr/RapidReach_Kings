@@ -8,7 +8,6 @@ import { db } from '../firebaseConfig';
 export default function HomeScreen() {
   const router = useRouter();
   const [locationEnabled, setLocationEnabled] = useState(false);
-  const [emergencyType, setEmergencyType] = useState('');
  
   // Check location permission(same like respondeer setup page)
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function HomeScreen() {
       );
       return;
     }
-    
+
     const { status } = await Location.getForegroundPermissionsAsync();
     
     if (status !== 'granted') {

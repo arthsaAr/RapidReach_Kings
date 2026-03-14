@@ -84,7 +84,7 @@ export default function ResponderAlertScreen() {
             <Ionicons name="medkit" size={22} color="#ef4444" />
             <Text className="text-gray-500 text-base ml-2">Emergency Type</Text>
           </View>
-          <Text className="text-gray-900 text-xl font-bold mb-5">Medical Emergency</Text>
+          <Text className="text-gray-900 text-xl font-bold mb-5">{emergency?.type || 'Medical Emergency'}</Text>
 
           <View className="h-px bg-red-200 mb-4" />
 

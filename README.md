@@ -121,7 +121,7 @@ const GEMINI_API = "YOUR_GEMINI_API_KEY";
 ### Run
 
 ```bash
-npx expo start --clear
+npx expo start --clear || npx expo start -c
 ```
 
 ---
